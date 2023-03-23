@@ -114,8 +114,6 @@ function App() {
         REALTIME_LISTEN_TYPES.BROADCAST,
         { event: "message" },
         ({ payload }) => {
-          console.log(payload);
-
           setMessages((messages) => [...messages, payload]);
         }
       );
@@ -166,12 +164,11 @@ function App() {
                   if (isChatMessage(message)) {
                     // there must be a better way to get the real height of message
                     const rows = Math.ceil(
-                      (message.message.length + message.username.length) /
-                        (width / 8)
+                      message.message.length / (width / 10)
                     );
-                    return 80 * rows;
+                    return 80 + (28 * (rows-1));
                   }
-                  return 20;
+                  return 24;
                 }}
                 itemCount={messages.length}
                 itemData={messages}
@@ -261,8 +258,6 @@ function MessageRow(
 ) {
   const { index, style, data } = props;
   const message = data[index];
-
-  console.log(style);
 
   if (isChatMessage(message)) {
     return (
