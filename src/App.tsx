@@ -43,7 +43,7 @@ function App() {
   const [channel, setChannel] = useState<RealtimeChannel>();
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const [users, setUsers] = useState<string[]>([]);
+  const [users, setUsers] = useState<Set<string>>(new Set([]));
   const [searchParams] = useSearchParams();
   const roomCode = searchParams.get("room");
   const listRef = useRef<any>();
@@ -74,7 +74,7 @@ function App() {
         REALTIME_LISTEN_TYPES.PRESENCE,
         { event: REALTIME_PRESENCE_LISTEN_EVENTS.SYNC },
         () => {
-          setUsers(Object.keys(channel.presenceState()).sort());
+          setUsers(new Set(Object.keys(channel.presenceState())));
         }
       );
       channel.on(
@@ -166,7 +166,7 @@ function App() {
                     const rows = Math.ceil(
                       message.message.length / (width / 10)
                     );
-                    return 80 + (28 * (rows-1));
+                    return 80 + 28 * (rows - 1);
                   }
                   return 24;
                 }}
@@ -254,7 +254,7 @@ function Navbar({ roomCode, username, leaveRoom }) {
 }
 
 function MessageRow(
-  props: ListChildComponentProps & { users: string[]; isUser: boolean }
+  props: ListChildComponentProps & { users: Set<string>; isUser: boolean }
 ) {
   const { index, style, data } = props;
   const message = data[index];
@@ -266,7 +266,7 @@ function MessageRow(
           isUser={props.isUser}
           name={message.username}
           msg={message.message}
-          online={props.users.includes(message.username)}
+          online={props.users.has(message.username)}
         />
       </div>
     );
