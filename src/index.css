@@ -2,3 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  #root {
+    height: calc(100vh - 1rem);
+    margin-top: 0.5rem;
+    margin-bottom: auto;
+  }
+}
