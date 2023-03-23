@@ -136,7 +136,7 @@ function App() {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  });
+  }, []);
 
   useEffect(() => {
     listRef.current?.scrollToItem(messages.length);
@@ -144,6 +144,7 @@ function App() {
 
   const leaveRoom = () => {
     setUsername("");
+    setMessages([]);
     nav({ pathname: "/", search: `?room=${roomCode}` });
   };
 
@@ -152,7 +153,7 @@ function App() {
   return (
     <div className="flex flex-col mx-auto container max-w-xl center bg-white h-full rounded-lg overflow-hidden">
       <Navbar roomCode={roomCode} username={username} leaveRoom={leaveRoom} />
-      <main className="flex-1 mx-1">
+      <main className="flex-1 m-2">
         <AutoSizer>
           {({ height, width }) => {
             return (
@@ -168,9 +169,9 @@ function App() {
                       (message.message.length + message.username.length) /
                         (width / 8)
                     );
-                    return 32 * rows;
+                    return 80 * rows;
                   }
-                  return 24;
+                  return 20;
                 }}
                 itemCount={messages.length}
                 itemData={messages}
@@ -208,7 +209,7 @@ function App() {
 
 function ChatBubble({ isUser, name, msg, online }) {
   return (
-    <div className={`chat ${isUser ? "chat-end" : "chat-start"}`}>
+    <div className={`chat ${isUser ? "chat-end mr-2" : "chat-start"}`}>
       <div className={`chat-image avatar placeholder ${online && "online"}`}>
         <div
           className={`${
@@ -261,19 +262,23 @@ function MessageRow(
   const { index, style, data } = props;
   const message = data[index];
 
+  console.log(style);
+
   if (isChatMessage(message)) {
     return (
-      <ChatBubble
-        isUser={props.isUser}
-        name={message.username}
-        msg={message.message}
-        online={props.users.includes(message.username)}
-      />
+      <div style={style} id={message.id} key={message.id}>
+        <ChatBubble
+          isUser={props.isUser}
+          name={message.username}
+          msg={message.message}
+          online={props.users.includes(message.username)}
+        />
+      </div>
     );
   }
 
-  if (!props.isUser)
-    return (
+  return (
+    <div style={style} id={message.id} key={message.id}>
       <p
         className={`text-center font-thin italic text-sm my-1 ${
           message.action === "join" ? "text-green-700" : "text-red-500"
@@ -283,7 +288,8 @@ function MessageRow(
         {message.action === "join" ? " joined " : " left "}
         the room
       </p>
-    );
+    </div>
+  );
 }
 
 function InputBox({ onMessage, focus }: { onMessage: any; focus: boolean }) {
